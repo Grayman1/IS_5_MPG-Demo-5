@@ -396,7 +396,12 @@ socket.on("init", ({ id, players, coin }) => {
   });
 
   // Handle endGame state
-  socket.on("end-game", (result) => (endGame = result));
+  socket.on("end-game", (result) => {
+    endGame = result;
+    console.log("end-game-game.mjs:", endGame);
+   // let gameOver= true;
+  });
+//  socket.on("end-game", (result) => (endGame = result));
 
   // Update scoring player's score
   socket.on("update-player", (playerObj) => {
@@ -432,17 +437,19 @@ const draw = () => {
   context.fillStyle = "white";
   context.font = `13px 'Press Start 2P'`;
   context.textAlign = "center";
-  context.fillText("Controls: WASD", 100, 32.5);
+  context.fillText("Controls: WASD", 100, 25);
 
   // Game title
   context.font = `16px 'Press Start 2P'`;
   context.fillText("Coin Race", canvasCalcs.canvasWidth / 2, 32.5);
+
 
   // Calculate score and draw players each frame
   currPlayers.forEach((player) => {
     player.draw(context, item, { mainPlayerArt, otherPlayerArt }, currPlayers);
   //  player.draw(context, item, { mainPlayerArt, otherPlayerArt }, currPlayers);
   });
+
 
   // Draw current coin
   item.draw(context, { bronzeCoinArt, silverCoinArt, goldCoinArt });
@@ -459,10 +466,11 @@ const draw = () => {
   if (endGame) {
     context.fillStyle = "white";
     context.font = `13px 'Press Start 2P'`;
+    context.textAlign = "center";
     context.fillText(
-      `You ${endGame}! Restart and try again.`,
+      `You ${endGame}! Press "R" to Restart and try again.`,
       canvasCalcs.canvasWidth / 2,
-      80
+      150
     );
   }
 

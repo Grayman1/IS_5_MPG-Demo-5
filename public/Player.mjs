@@ -105,8 +105,19 @@ class Player {
     currDir.forEach((dir) => this.movePlayer(dir, this.speed));
 
     if (this.isMain) {
+    
+    // Display Player Rank
       context.font = `13px 'Press Start 2P'`;
       context.fillText(this.calculateRank(currPlayers), 560, 32.5);
+
+    // Display Player Score
+      context.font = `13px 'Press Start 2P'`;
+      context.textAlign = "left";
+      context.fillText(`Score: ${this.score} `, 49, 48);
+   
+      //(this.calculateRank(currPlayers), 560, 32.5);
+    console.log(`Score: ${this.score} `);
+
 
       context.drawImage(imgObj.mainPlayerArt, this.x, this.y)
    //   context.drawImage(imgObj.mainPlayerArt, this.x, this.y);

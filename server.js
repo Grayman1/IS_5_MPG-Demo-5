@@ -295,9 +295,11 @@ const generateCoin = () => {
 
 let coin = generateCoin();
 
+// on Connection, Expect main socket
 io.sockets.on("connection", (socket) => {
   console.log(`New connection ${socket.id}`);
 
+  // Emit init with socket id for client to create Player
   socket.emit("init", { id: socket.id, players: currPlayers, coin });
 
   socket.on("new-player", (obj) => {
@@ -348,7 +350,7 @@ io.sockets.on("connection", (socket) => {
       io.emit("update-player", scoringPlayer);
 
       // Communicate win state and broadcast losses
-      if (scoringPlayer.score >= 100) {
+      if (scoringPlayer.score >= 10) {
         sock.emit("end-game", "win");
         sock.broadcast.emit("end-game", "lose");
       }
@@ -359,9 +361,45 @@ io.sockets.on("connection", (socket) => {
     }
   });
 
+  // Handle Game Reset Request
+  socket.on('reset-request', () => {
+    console.log('reset-request sent');
+    console.log("end-game-server.js:", endGame)
+    if (!endGame == '') {
+      endGame == '';
+
+    // Reset Players
+      currPlayers.forEach(obj => {
+        if (Number.isInteger(obj.id)) {
+        //  let startCoords = defaultPlayerStart(obj.id);
+          obj.x = generateStartPos(
+            canvasCalcs.playFieldMinX,
+            canvasCalcs.playFieldMaxX,
+            5
+          );
+          obj.y = generateStartPos(
+            canvasCalcs.playFieldMinY,
+            canvasCalcs.playFieldMaxY,
+            5
+          );
+          obj.score = 0;
+        }
+      })
+      // Send out New Game State Info
+      io.emit('new-game', currPlayers)
+    }
+    else {
+      console.log("Reset requested but game isn't over yet");
+    }
+  })
+
+
+  // Listen on Player Disconnecting
   socket.on("disconnect", () => {
     socket.broadcast.emit("remove-player", socket.id);
     console.log(`${socket.id} Player disconnected`);
+
+    // Remove Disconnected Player from Active Player array
     currPlayers = currPlayers.filter((player) => player.id !== socket.id);
   });
 });
